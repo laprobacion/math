@@ -55,11 +55,13 @@ public class MultiplyListener implements View.OnDragListener, View.OnTouchListen
                 if(draggedItem.size() == 2) {
                     if(!validator.validate(draggedItem)){
                         processor.renderPopupWindow(false);
-                        draggedItem.clear();
-                        processor.invalidateAll();
+                        processor.invalidateAll(draggedItem);
                         break;
                     }
                     if(processor.setTopNum(draggedItem)){
+                        processor.renderPopupWindow(false);
+                        draggedItem.clear();
+                    }else if(processor.setTopNum3(draggedItem)){
                         processor.renderPopupWindow(false);
                         draggedItem.clear();
                     }else {
@@ -67,9 +69,16 @@ public class MultiplyListener implements View.OnDragListener, View.OnTouchListen
                             processor.setTotalAns1(draggedItem);
                         }else if(draggedItem.getItem(0).getId() == R.id.ans2 && draggedItem.getItem(1).getId() == R.id.totalAns2){
                             processor.setTotalAns2(draggedItem);
+                        }else if(draggedItem.getItem(0).getId() == R.id.ans1 && draggedItem.getItem(1).getId() == R.id.totalAns3){
+                            processor.setTotalAns3(draggedItem);
                         }else{
                             processor.setFormulaPop(draggedItem);
-                            processor.renderPopupWindow(true);
+                            if(validator.getStep().getStep() == MultiplyStep.STEP_9 && validator.get(R.id.topNum3).getText().toString().equals("0")){
+                                processor.renderPopupWindow(false);
+                            }else{
+                                processor.renderPopupWindow(true);
+                            }
+
                         }
                     }
                 }else{

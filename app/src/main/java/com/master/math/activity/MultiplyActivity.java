@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -18,17 +20,19 @@ public class MultiplyActivity extends AppCompatActivity  {
 
     MultiplyProcessor processor;
     RelativeLayout parentMultiply;
-    TextView replay, newProblem;
+    TextView formulaPop;
     EditText userAns;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_multiply);
-        setReplay();
-        setNewProblem();
         userAns = (EditText) findViewById(R.id.userAns);
         parentMultiply = (RelativeLayout) findViewById(R.id.parentMultiply);
+        formulaPop = (TextView) findViewById(R.id.formulaPop);
+        formulaPop.setTextColor(Color.argb(255, 255, 255, 255));
+        formulaPop.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/EraserDust.ttf"));
+        //MultiplyCache.getInstance().setNums(9,5,1,6);
         if(MultiplyCache.getInstance().getNums() != null){
             processor = new MultiplyProcessor(this,getAssets(),MultiplyCache.getInstance().getNums());
         }else{
@@ -39,11 +43,11 @@ public class MultiplyActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 if(processor.isPopupMultiplyVisible()) {
-                    if(validateInput()) {
+                    if(validateInput() && processor.isFormulaPopAnsCorrect()) {
                         processor.renderPopupWindow(false);
                         processor.renderAnswerWindow(true);
                     }else{
-                        Toast.makeText(MultiplyActivity.this, " Input Error ", Toast.LENGTH_SHORT).show();
+                        userAns.startAnimation(shakeError());
                     }
                 }
             }
@@ -61,31 +65,10 @@ public class MultiplyActivity extends AppCompatActivity  {
         }
         return true;
     }
-    private void setReplay(){
-        replay = (TextView) findViewById(R.id.replay);
-        replay.setTextColor(Color.argb(255, 255, 255, 255));
-        replay.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/EraserDust.ttf"));
-        replay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MultiplyCache.getInstance().setNums(processor.getNum1(),processor.getNum2(),processor.getNum3());
-                finish();
-                startActivity(getIntent());
-            }
-        });
-    }
-
-    private void setNewProblem(){
-        newProblem = (TextView) findViewById(R.id.newProblem);
-        newProblem.setTextColor(Color.argb(255, 255, 255, 255));
-        newProblem.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/EraserDust.ttf"));
-        newProblem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MultiplyCache.getInstance().setNums(null);
-                finish();
-                startActivity(getIntent());
-            }
-        });
+    public TranslateAnimation shakeError() {
+        TranslateAnimation shake = new TranslateAnimation(0, 10, 0, 0);
+        shake.setDuration(500);
+        shake.setInterpolator(new CycleInterpolator(7));
+        return shake;
     }
 }

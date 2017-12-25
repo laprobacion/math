@@ -14,6 +14,9 @@ public class MultiplyValidator {
 
     private MultiplyStep step;
     private DraggedItem draggedItem;
+    public MultiplyStep getStep(){
+        return this.step;
+    }
     public MultiplyValidator(MultiplyStep step){
         this.step = step;
         draggableItems = new ArrayList<TextView>();
@@ -71,6 +74,35 @@ public class MultiplyValidator {
                 return true;
             }
         }
+        if(step.getStep() == MultiplyStep.STEP_5){
+            if(get1Id() == R.id.num2 && get2Id() == R.id.num4){
+                return true;
+            }
+        }
+        if(step.getStep() == MultiplyStep.STEP_6){
+            if(isBoxedEmpty()){
+                if(get1Id() == R.id.num1 && get2Id() == R.id.num4){
+                    return true;
+                }
+            }else{
+                if(get1Id() == R.id.ans2 && get(R.id.topNum3).getBackground() !=null && get2Id() == R.id.topNum3){
+                    return true;
+                }
+                if(get1Id() == R.id.ans1 && get2Id() == R.id.totalAns3){
+                    return true;
+                }
+            }
+        }
+        if(step.getStep() == MultiplyStep.STEP_7){
+            if(get1Id() == R.id.num1 && get2Id() == R.id.num4){
+                return true;
+            }
+        }
+        if(step.getStep() == MultiplyStep.STEP_8){
+            if(get1Id() == R.id.ans2 && get2Id() == R.id.totalAns4){
+                return true;
+            }
+        }
         return invalidateFalse();
     }
     private boolean invalidateFalse(){
@@ -80,7 +112,7 @@ public class MultiplyValidator {
         get2().invalidate();
         return false;
     }
-    private TextView get(int id){
+    public TextView get(int id){
         for(TextView v : draggableItems){
             if(v.getId() == id){
                 return v;
@@ -100,17 +132,17 @@ public class MultiplyValidator {
     private int get2Id(){
         return this.draggedItem.getItem(1).getId();
     }
-    private boolean isBoxedEmpty(){
+    public boolean isBoxedEmpty(){
         return !(get(R.id.ans1).getVisibility() == View.VISIBLE || get(R.id.ans2).getVisibility() == View.VISIBLE);
     }
     private boolean firstCarryTopNumEmpty(){
         return get(R.id.topNum).getText().toString() == "0";
     }
     public boolean isFinished(){
-        if(get(R.id.finalAnswer).getVisibility() == View.VISIBLE){
+        /**if(get(R.id.finalAnswerGroup1).getVisibility() == View.VISIBLE){
             removeListeners();
             return true;
-        }
+        }**/
         return false;
     }
     public void removeListeners(){
