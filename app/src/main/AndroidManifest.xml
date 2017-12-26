@@ -16,7 +16,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MultiplyActivity"></activity>
+        <activity android:name=".activity.MultiplyActivity" />
+        <activity
+            android:name=".activity.FractionActivity"
+            android:label="@string/title_activity_fraction"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity android:name=".activity.AdditionActivity"></activity>
     </application>
 
 </manifest>

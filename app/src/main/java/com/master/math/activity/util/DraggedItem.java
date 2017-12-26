@@ -1,9 +1,9 @@
-package multiply;
+package com.master.math.activity.util;
 
 import android.widget.TextView;
 
 public class DraggedItem {
-    TextView[] dragItems;
+    private TextView[] dragItems;
     public DraggedItem(){
         clear();
     }
@@ -18,5 +18,8 @@ public class DraggedItem {
     }
     public int size(){
         return dragItems.length;
+    }
+    public TextView[] getDragItems(){
+        return dragItems;
     }
 }

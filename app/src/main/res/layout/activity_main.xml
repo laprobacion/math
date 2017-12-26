@@ -23,5 +23,17 @@
         android:layout_marginTop="152dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+    <Button
+        android:id="@+id/btnAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:textSize="32dp"
+        android:background="@null"
+        android:textColor="#ffffff"
+        tools:layout_editor_absoluteX="146dp"
+        tools:layout_editor_absoluteY="144dp"
+        android:layout_below="@+id/btnMultiply"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

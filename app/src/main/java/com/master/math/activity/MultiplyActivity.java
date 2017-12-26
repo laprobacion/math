@@ -13,6 +13,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.master.math.R;
+import com.master.math.activity.util.Util;
+
 import multiply.MultiplyCache;
 import multiply.MultiplyProcessor;
 
@@ -29,10 +31,8 @@ public class MultiplyActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_multiply);
         userAns = (EditText) findViewById(R.id.userAns);
         parentMultiply = (RelativeLayout) findViewById(R.id.parentMultiply);
-        formulaPop = (TextView) findViewById(R.id.formulaPop);
-        formulaPop.setTextColor(Color.argb(255, 255, 255, 255));
-        formulaPop.setTypeface(Typeface.createFromAsset(getAssets(),"fonts/EraserDust.ttf"));
-        //MultiplyCache.getInstance().setNums(9,5,1,6);
+        formulaPop = Util.getTextViewWithFont(this,R.id.formulaPop);
+        //MultiplyCache.getInstance().setNums(8,7,1,1);
         if(MultiplyCache.getInstance().getNums() != null){
             processor = new MultiplyProcessor(this,getAssets(),MultiplyCache.getInstance().getNums());
         }else{
@@ -44,7 +44,7 @@ public class MultiplyActivity extends AppCompatActivity  {
             public void onClick(View v) {
                 if(processor.isPopupMultiplyVisible()) {
                     if(validateInput() && processor.isFormulaPopAnsCorrect()) {
-                        processor.renderPopupWindow(false);
+                        processor.renderPopupWindow(null,false);
                         processor.renderAnswerWindow(true);
                     }else{
                         userAns.startAnimation(shakeError());

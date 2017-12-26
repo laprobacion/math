@@ -3,19 +3,19 @@ package multiply;
 import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.master.math.R;
+import com.master.math.activity.util.DraggedItem;
+import com.master.math.activity.util.Util;
 
-import java.util.Random;
+import static com.master.math.activity.util.Util.generateRandomNumbers;
 
 public class MultiplyProcessor {
-    private TextView num1,num2,num3,num4,multiply,line,formulaPop, ans1, ans2,topNum,topNum2,topNum3, totalAns1, totalAns2,totalAns3,totalAns4, finalAnswerGroup1;
+    private TextView num1,num2,num3,num4,multiply,line,formulaPop, ans1, ans2,topNum,topNum2,topNum3, totalAns1, totalAns2,totalAns3,totalAns4, finalAnswerGroup1, add;
     private EditText userAns;
     private RelativeLayout popupMultiply,parentMultiply;
     private MultiplyInitializer initializer;
@@ -23,41 +23,36 @@ public class MultiplyProcessor {
     private Activity activity;
     private MultiplyStep step;
     private int formulaPopAnswer;
+    private String topNum3Holder = "empty";
+    private String totalAns3Holder = "empty";
     public MultiplyProcessor(Activity activity, AssetManager asset, int... i){
         step = new MultiplyStep();
         this.activity = activity;
-        userAns = (EditText) activity.findViewById(R.id.userAns);
-        userAns.setTypeface(Typeface.createFromAsset(asset,"fonts/EraserDust.ttf"));
-        finalAnswerGroup1 = (TextView) activity.findViewById(R.id.finalAnswerGroup1);
-        num1 = (TextView) activity.findViewById(R.id.num1);
-        num2 = (TextView) activity.findViewById(R.id.num2);
-        num3 = (TextView) activity.findViewById(R.id.num3);
-        num4 = (TextView) activity.findViewById(R.id.num4);
-        topNum = (TextView) activity.findViewById(R.id.topNum);
-        topNum2 = (TextView) activity.findViewById(R.id.topNum2);
-        topNum3 = (TextView) activity.findViewById(R.id.topNum3);
-        multiply = (TextView) activity.findViewById(R.id.multiply);
-        line = (TextView) activity.findViewById(R.id.line);
-        ans1 = (TextView) activity.findViewById(R.id.ans1);
-        ans2 = (TextView) activity.findViewById(R.id.ans2);
-        totalAns1 = (TextView) activity.findViewById(R.id.totalAns1);
-        totalAns2 = (TextView) activity.findViewById(R.id.totalAns2);
-        totalAns3 = (TextView) activity.findViewById(R.id.totalAns3);
-        totalAns4 = (TextView) activity.findViewById(R.id.totalAns4);
-        formulaPop = (TextView) activity.findViewById(R.id.formulaPop);
+        userAns = Util.getEditTextWithFont(activity, R.id.userAns);
+        finalAnswerGroup1 = Util.getTextViewWithFont(activity, R.id.finalAnswerGroup1);
+        num1 = Util.getTextViewWithFont(activity, R.id.num1);
+        num2 = Util.getTextViewWithFont(activity, R.id.num2);
+        num3 = Util.getTextViewWithFont(activity, R.id.num3);
+        num4 = Util.getTextViewWithFont(activity, R.id.num4);
+        topNum = Util.getTextViewWithFontInvisible(activity, R.id.topNum);
+        topNum2 = Util.getTextViewWithFontInvisible(activity, R.id.topNum2);
+        topNum3 = Util.getTextViewWithFontInvisible(activity, R.id.topNum3);
+        multiply = Util.getTextViewWithFont(activity, R.id.multiply);
+        line = Util.getTextViewWithFont(activity, R.id.line);
+        ans1 = Util.getTextViewWithFont(activity, R.id.ans1);
+        ans2 = Util.getTextViewWithFont(activity, R.id.ans2);
+        add = Util.getTextViewWithFont(activity, R.id.add);
+        totalAns1 = Util.getTextViewWithFontInvisible(activity, R.id.totalAns1);
+        totalAns2 = Util.getTextViewWithFontInvisible(activity, R.id.totalAns2);
+        totalAns3 = Util.getTextViewWithFontInvisible(activity, R.id.totalAns3);
+        totalAns4 = Util.getTextViewWithFontInvisible(activity, R.id.totalAns4);
+        formulaPop = Util.getTextViewWithFontInvisible(activity, R.id.formulaPop);
         popupMultiply = (RelativeLayout) activity.findViewById(R.id.popupMultiply);
         parentMultiply = (RelativeLayout) activity.findViewById(R.id.parentMultiply);
-        this.initializer = new MultiplyInitializer(step,this, asset, num1,num2,num3,num4,topNum,topNum2,topNum3,multiply,line,ans1,ans2,totalAns1,totalAns2,totalAns3,totalAns4,finalAnswerGroup1);
+        this.initializer = new MultiplyInitializer(step,this,num1,num2,num3,num4,topNum,topNum2,topNum3,multiply,line,ans1,ans2,totalAns1,totalAns2,totalAns3,totalAns4,finalAnswerGroup1);
         setNumbers(i);
-        this.initializer.getValidator().addDraggableItems(num1,num2,num3,ans1,ans2,num4,topNum,topNum2,topNum3,totalAns1,totalAns2,totalAns3,totalAns4,finalAnswerGroup1);
-        renderPopupWindow(false);
-        topNum.setTextColor(Color.argb(2, 255, 255, 255));
-        topNum2.setTextColor(Color.argb(2, 255, 255, 255));
-        topNum3.setTextColor(Color.argb(2, 255, 255, 255));
-        totalAns1.setTextColor(Color.argb(2, 255, 255, 255));
-        totalAns2.setTextColor(Color.argb(2, 255, 255, 255));
-        totalAns3.setTextColor(Color.argb(2, 255, 255, 255));
-        totalAns4.setTextColor(Color.argb(2, 255, 255, 255));
+        this.initializer.getValidator().addDraggableItems(num1,num2,num3,ans1,ans2,num4,topNum,topNum2,topNum3,totalAns1,totalAns2,totalAns3,totalAns4,finalAnswerGroup1,add);
+        renderPopupWindow(null, false);
         renderAnswerWindow(false);
     }
     private void setFormulaPopAnswer(int ans){
@@ -66,23 +61,10 @@ public class MultiplyProcessor {
     public boolean isPopupMultiplyVisible(){
         return popupMultiply.getVisibility() == View.VISIBLE;
     }
-    private void animateLayout(boolean show){
-        AlphaAnimation clear = new AlphaAnimation(100, 100);
-        clear.setDuration(0); // Make animation instant
-        clear.setFillAfter(true); // Tell it to persist after the animation ends
-        AlphaAnimation fade = new AlphaAnimation(0.5F, 0.5F);
-        fade.setDuration(0); // Make animation instant
-        fade.setFillAfter(true); // Tell it to persist after the animation ends
+
+    public void renderPopupWindow(DraggedItem draggedItem, boolean show){
         if(show){
-            popupMultiply.startAnimation(clear);
-            parentMultiply.startAnimation(fade);
-        }else {
-            popupMultiply.startAnimation(fade);
-            parentMultiply.startAnimation(clear);
-        }
-    }
-    public void renderPopupWindow(boolean show){
-        if(show){
+            setFormulaPop(draggedItem);
             popupMultiply.setVisibility(View.VISIBLE);
             formulaPop.setVisibility(View.VISIBLE);
             userAns.setVisibility(View.VISIBLE);
@@ -91,10 +73,21 @@ public class MultiplyProcessor {
             popupMultiply.setVisibility(View.INVISIBLE);
             formulaPop.setVisibility(View.INVISIBLE);
         }
+        maskStepTopNum3TotalAns3(!show);
         fadeBackground(show);
     }
 
-
+    private void maskStepTopNum3TotalAns3(boolean mask){
+        if(step.getStep() == MultiplyStep.STEP_9){
+            if(mask){
+                if(topNum3.getVisibility() == View.VISIBLE){
+                    Util.showWithText(topNum3, topNum3Holder);
+                }
+                Util.showWithText(totalAns3, totalAns3Holder);
+                Util.showWithText(add,"add");
+            }
+        }
+    }
     private void fadeBackground(boolean isFade){
         if(isFade){
             num1.setVisibility(View.INVISIBLE);
@@ -118,22 +111,22 @@ public class MultiplyProcessor {
         userAns.setText("");
         formulaPop.setText("");
         int n1 = Integer.valueOf(draggedItem.getItem(0).getText().toString());
-        int n2 = Integer.valueOf(draggedItem.getItem(1).getText().toString());
+        int n2 = draggedItem.getItem(1).getText().toString() == Util.DOUBLE_SPACES ? 0 : Integer.valueOf(draggedItem.getItem(1).getText().toString());
         Integer ans = n1 * n2;
+        String formula = "";
         if(step.getStep() == MultiplyStep.STEP_1 || step.getStep() == MultiplyStep.STEP_2 || step.getStep() == MultiplyStep.STEP_5 || step.getStep() == MultiplyStep.STEP_7 ) {
-            formulaPop.setText(n1 + " x " + n2 + " =      " );
+            formula = n1 + " x " + n2 + " =      " ;
         }else if(step.getStep() == MultiplyStep.STEP_8){
             ans = Integer.valueOf(n1) + Integer.valueOf(topNum3.getText().toString().trim());
-            formulaPop.setText(n1 + " + " + topNum3.getText().toString() + " =      ");
+            formula = n1 + " + " + topNum3.getText().toString() + " =      ";
             setTotalAns4(draggedItem, ans);
         }else if(step.getStep() == MultiplyStep.STEP_3){
             ans = Integer.valueOf(n1) + Integer.valueOf(topNum.getText().toString().trim());
-            formulaPop.setText(n1 + " + " + topNum.getText().toString() + " =      ");
-
+            formula = n1 + " + " + topNum.getText().toString() + " =      ";
             setTopNum2(draggedItem);
         }
         setFormulaPopAnswer(ans);
-        formulaPop.invalidate();
+        Util.showWithText(formulaPop,formula);
     }
 
     public boolean isFormulaPopAnsCorrect(){
@@ -141,38 +134,23 @@ public class MultiplyProcessor {
     }
     private void setTopNum2(DraggedItem draggedItem){
         if(draggedItem.getItem(1).getId() == R.id.topNum2){
-            topNum2.setText(draggedItem.getItem(0).getText());
-            topNum2.setTextColor(Color.argb(255, 255, 255, 255));
-            topNum2.setVisibility(View.VISIBLE);
-            draggedItem.getItem(0).setVisibility(View.INVISIBLE);
-            draggedItem.getItem(0).invalidate();
-            topNum2.setBackground(null);
-            topNum2.invalidate();
+            Util.hide(draggedItem.getItem(0));
+            Util.showWithText(topNum2, draggedItem.getItem(0).getText().toString());
         }
     }
     public boolean setTopNum(DraggedItem draggedItem){
         if(draggedItem.getItem(1).getId() == R.id.topNum){
-            topNum.setText(draggedItem.getItem(0).getText());
-            topNum.setTextColor(Color.argb(255, 255, 255, 255));
-            topNum.setVisibility(View.VISIBLE);
-            draggedItem.getItem(0).setVisibility(View.INVISIBLE);
-            draggedItem.getItem(0).invalidate();
-            topNum.setBackground(null);
-            topNum.invalidate();
+            Util.showWithText(topNum, draggedItem.getItem(0).getText().toString());
+            Util.hide(draggedItem.getItem(0));
             return true;
         }
         return false;
     }
     public boolean setTopNum3(DraggedItem draggedItem){
         if(draggedItem.getItem(1).getId() == R.id.topNum3){
-            topNum3.setText(draggedItem.getItem(0).getText());
-            topNum3.setTextColor(Color.argb(255, 255, 255, 255));
-            topNum3.setVisibility(View.VISIBLE);
-            draggedItem.getItem(0).setVisibility(View.INVISIBLE);
-            draggedItem.getItem(0).invalidate();
-            topNum3.setBackground(null);
+            Util.hide(draggedItem.getItem(0));
             topNum3.setTextSize(33);
-            topNum3.invalidate();
+            Util.showWithText(topNum3, draggedItem.getItem(0).getText().toString());
             if(this.initializer.getValidator().isBoxedEmpty()){
                 step.increment();
             }
@@ -205,59 +183,41 @@ public class MultiplyProcessor {
         num4.setText(String.valueOf(num));
         num4.invalidate();
     }
-    private String generateRandomNumbers(boolean includeZero){
-        Random rand = new Random();
-        Integer  n = 0;
-        if(!includeZero){
-            n = rand.nextInt(9) + 1;
-        }else{
-            n = rand.nextInt(9);
-        }
-        return n.toString();
-    }
+
 
     private void populateAnsBox(){
         String strAns = popupAnswer.toString();
         if(step.getStep() == MultiplyStep.STEP_1) {
             if (strAns.length() == 2) {
-                ans2.setText(Character.toString(strAns.charAt(0)));
-                ans1.setText(Character.toString(strAns.charAt(1)));
-                ans1.setVisibility(View.VISIBLE);
-                ans2.setVisibility(View.VISIBLE);
-                topNum.setBackground(activity.getResources().getDrawable(R.drawable.border));
+                Util.showWithText(ans1, Character.toString(strAns.charAt(1)));
+                Util.showWithText(ans2, Character.toString(strAns.charAt(0)));
+                Util.showWithBG(topNum, activity);
             } else {
-                ans1.setText(Character.toString(strAns.charAt(0)));
-                ans1.setVisibility(View.VISIBLE);
+                Util.showWithText(ans1, Character.toString(strAns.charAt(0)));
             }
-            totalAns1.setBackground(activity.getResources().getDrawable(R.drawable.border));
+            Util.showWithBG(totalAns1, activity);
         }else if(step.getStep() == MultiplyStep.STEP_2){
             if (!topNum.getText().equals("0")) {
-                topNum2.setBackground(activity.getResources().getDrawable(R.drawable.border));
+                Util.showWithBG(topNum2, activity);
             }else{
-                totalAns2.setBackground(activity.getResources().getDrawable(R.drawable.border));
+                Util.showWithBG(totalAns2, activity);
             }
-            ans2.setText(strAns);
-            ans2.setVisibility(View.VISIBLE);
+            Util.showWithText(ans2, strAns);
         }else if(step.getStep() == MultiplyStep.STEP_3){
-            totalAns2.setBackground(activity.getResources().getDrawable(R.drawable.border));
-            ans2.setText(strAns);
-            ans2.setVisibility(View.VISIBLE);
+            Util.showWithBG(totalAns2,activity);
+            Util.showWithText(ans2, strAns);
         }else if(step.getStep() == MultiplyStep.STEP_5){
             if (strAns.length() == 2) {
-                ans2.setText(Character.toString(strAns.charAt(0)));
-                ans1.setText(Character.toString(strAns.charAt(1)));
-                ans1.setVisibility(View.VISIBLE);
-                ans2.setVisibility(View.VISIBLE);
-                topNum3.setBackground(activity.getResources().getDrawable(R.drawable.border));
+                Util.showWithText(ans1, Character.toString(strAns.charAt(1)));
+                Util.showWithText(ans2, Character.toString(strAns.charAt(0)));
+                Util.showWithBG(topNum3,activity);
             } else {
-                ans1.setText(Character.toString(strAns.charAt(0)));
-                ans1.setVisibility(View.VISIBLE);
+                Util.showWithText(ans1, Character.toString(strAns.charAt(0)));
             }
-            totalAns3.setBackground(activity.getResources().getDrawable(R.drawable.border));
+            Util.showWithBG(totalAns3,activity);
         }else if(step.getStep() == MultiplyStep.STEP_7){
-            ans2.setText(strAns);
-            ans2.setVisibility(View.VISIBLE);
-            totalAns4.setBackground(activity.getResources().getDrawable(R.drawable.border));
+            Util.showWithText(ans2, strAns);
+            Util.showWithBG(totalAns4,activity);
         }
 
     }
@@ -280,24 +240,14 @@ public class MultiplyProcessor {
 
 
     public void setTotalAns1(DraggedItem draggedItem){
-        totalAns1.setText(draggedItem.getItem(0).getText());
-        totalAns1.setTextColor(Color.argb(255, 255, 255, 255));
-        totalAns1.setVisibility(View.VISIBLE);
-        draggedItem.getItem(0).setVisibility(View.INVISIBLE);
-        draggedItem.getItem(0).invalidate();
-        totalAns1.setBackground(null);
-        totalAns1.invalidate();
-
+        Util.hide(draggedItem.getItem(0));
+        Util.showWithText(totalAns1, draggedItem.getItem(0).getText().toString());
     }
     public void setTotalAns2(DraggedItem draggedItem){
         setFin(Integer.valueOf(draggedItem.getItem(0).getText().toString() + totalAns1.getText().toString()));
-        draggedItem.getItem(0).setVisibility(View.INVISIBLE);
-        draggedItem.getItem(0).invalidate();
-        totalAns1.setVisibility(View.INVISIBLE);
-        totalAns2.setVisibility(View.INVISIBLE);
-        totalAns2.invalidate();
-        totalAns1.invalidate();
-        totalAns2.invalidate();
+        Util.hide(draggedItem.getItem(0));
+        Util.hide(totalAns1);
+        Util.hide(totalAns2);
         MultiplyCache.getInstance().setNums(null);
         step.setStep(MultiplyStep.STEP_5);
     }
@@ -308,54 +258,55 @@ public class MultiplyProcessor {
         }else{
             txt = draggedItem.getItem(0).getText() + "0";
         }
-        totalAns3.setText(txt);
-        totalAns3.setTextColor(Color.argb(255, 255, 255, 255));
-        totalAns3.setVisibility(View.VISIBLE);
-        draggedItem.getItem(0).setVisibility(View.INVISIBLE);
-        draggedItem.getItem(0).invalidate();
-        totalAns3.setBackground(null);
-        totalAns3.invalidate();
+        Util.showWithText(totalAns3, txt);
+        Util.hide(draggedItem.getItem(0));
         if(this.initializer.getValidator().isBoxedEmpty()){
             step.increment();
         }
     }
     public void setTotalAns4(DraggedItem draggedItem, int ans){
-        topNum3.setText(topNum3.getText().toString() + " + " + draggedItem.getItem(0).getText().toString() + " = " + ans);
-        String under = String.valueOf(ans) + totalAns3.getText().toString().trim();
+        topNum3Holder = topNum3.getText().toString() + " + " + draggedItem.getItem(0).getText().toString() + " = " + ans;
+        totalAns3Holder = String.valueOf(ans) + totalAns3.getText().toString().trim();
+        topNum3.setText(topNum3.getText().toString() + " + " + draggedItem.getItem(0).getText().toString() + " = ");
         String above = finalAnswerGroup1.getText().toString().trim();
+        int diff = totalAns3Holder.length() - above.length();
+        String spaces = "";
+        for(int i=0; i < diff; i++){
+            spaces += " ";
+        }
+        finalAnswerGroup1.setText(spaces + above);
+        Util.hide(totalAns4);
+        topNum3.setTextSize(20);
+        topNum3.invalidate();
+        Util.hide(draggedItem.getItem(0));
+        step.increment();
+    }
+    public void setTotalAns4(DraggedItem draggedItem){
+        String above = finalAnswerGroup1.getText().toString().trim();
+        String under = draggedItem.getItem(0).getText().toString()  + totalAns3.getText().toString().trim();
         int diff = under.length() - above.length();
         String spaces = "";
         for(int i=0; i < diff; i++){
             spaces += " ";
         }
         finalAnswerGroup1.setText(spaces + above);
-        totalAns3.setText(under);
-        totalAns4.setVisibility(View.INVISIBLE);
-        topNum3.setTextSize(20);
-        topNum3.invalidate();
-        totalAns4.invalidate();
-        totalAns3.invalidate();
-        draggedItem.getItem(0).setVisibility(View.INVISIBLE);
-        draggedItem.getItem(0).invalidate();
+        totalAns3Holder = under;
+        Util.hide(totalAns4);
+        Util.hide(draggedItem.getItem(0));
         step.increment();
     }
     private void setFin(int fin){
-        finalAnswerGroup1.setTextColor(Color.argb(255, 255, 255, 255));
         String txt = "";
         if(String.valueOf(fin).length() == 2){
             txt = " " + String.valueOf(fin);
         }else{
             txt = String.valueOf(fin);
         }
-        finalAnswerGroup1.setText(txt);
-        finalAnswerGroup1.setVisibility(View.VISIBLE);
-        finalAnswerGroup1.setOnClickListener(null);
-        finalAnswerGroup1.setOnTouchListener(null);
-        finalAnswerGroup1.setOnDragListener(null);
-        finalAnswerGroup1.invalidate();
+        Util.showWithText(finalAnswerGroup1, txt);
+        Util.removeListeners(finalAnswerGroup1);
     }
     public void invalidateAll(DraggedItem draggedItem){
-        for(TextView v : draggedItem.dragItems){
+        for(TextView v : draggedItem.getDragItems()){
             v.setVisibility(View.VISIBLE);
             v.invalidate();
         }

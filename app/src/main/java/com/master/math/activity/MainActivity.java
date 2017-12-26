@@ -9,6 +9,7 @@ import android.view.Window;
 import android.widget.Button;
 
 import com.master.math.R;
+import com.master.math.activity.util.Util;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+
         Button btnMultiply = (Button) findViewById(R.id.btnMultiply);
         Typeface typeface = Typeface.createFromAsset(getAssets(),"fonts/EraserDust.ttf");
         btnMultiply.setTypeface(typeface);
@@ -26,6 +28,17 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, MultiplyActivity.class));
             }
         });
+
+        Button btnAdd = (Button) findViewById(R.id.btnAdd);
+        btnAdd.setTypeface(typeface);
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, AdditionActivity.class));
+            }
+        });
+
+        Util.setAsset(getAssets());
 
     }
 }

@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.master.math.R;
-
+import com.master.math.activity.util.DraggedItem;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,9 +126,7 @@ public class MultiplyValidator {
     private TextView get2(){
         return this.draggedItem.getItem(1);
     }
-    private int get1Id(){
-        return this.draggedItem.getItem(0).getId();
-    }
+    private int get1Id(){return this.draggedItem.getItem(0).getId(); }
     private int get2Id(){
         return this.draggedItem.getItem(1).getId();
     }
@@ -139,10 +137,10 @@ public class MultiplyValidator {
         return get(R.id.topNum).getText().toString() == "0";
     }
     public boolean isFinished(){
-        /**if(get(R.id.finalAnswerGroup1).getVisibility() == View.VISIBLE){
+        if(get(R.id.add).getVisibility() == View.VISIBLE){
             removeListeners();
             return true;
-        }**/
+        }
         return false;
     }
     public void removeListeners(){

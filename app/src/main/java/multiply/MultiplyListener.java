@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.master.math.R;
+import com.master.math.activity.util.DraggedItem;
 
 public class MultiplyListener implements View.OnDragListener, View.OnTouchListener{
     DraggedItem draggedItem;
@@ -54,15 +55,15 @@ public class MultiplyListener implements View.OnDragListener, View.OnTouchListen
                 }
                 if(draggedItem.size() == 2) {
                     if(!validator.validate(draggedItem)){
-                        processor.renderPopupWindow(false);
+                        processor.renderPopupWindow(null,false);
                         processor.invalidateAll(draggedItem);
                         break;
                     }
                     if(processor.setTopNum(draggedItem)){
-                        processor.renderPopupWindow(false);
+                        processor.renderPopupWindow(null, false);
                         draggedItem.clear();
                     }else if(processor.setTopNum3(draggedItem)){
-                        processor.renderPopupWindow(false);
+                        processor.renderPopupWindow(null, false);
                         draggedItem.clear();
                     }else {
                         if(draggedItem.getItem(0).getId() == R.id.ans1 && draggedItem.getItem(1).getId() == R.id.totalAns1){
@@ -72,11 +73,14 @@ public class MultiplyListener implements View.OnDragListener, View.OnTouchListen
                         }else if(draggedItem.getItem(0).getId() == R.id.ans1 && draggedItem.getItem(1).getId() == R.id.totalAns3){
                             processor.setTotalAns3(draggedItem);
                         }else{
-                            processor.setFormulaPop(draggedItem);
-                            if(validator.getStep().getStep() == MultiplyStep.STEP_9 && validator.get(R.id.topNum3).getText().toString().equals("0")){
-                                processor.renderPopupWindow(false);
+                            if((validator.getStep().getStep() == MultiplyStep.STEP_8 || validator.getStep().getStep() == MultiplyStep.STEP_9)
+                                    && validator.get(R.id.topNum3).getText().toString().indexOf("0") == 0){
+                                if(validator.getStep().getStep() == MultiplyStep.STEP_8){
+                                    processor.setTotalAns4(draggedItem);
+                                }
+                                processor.renderPopupWindow(null, false);
                             }else{
-                                processor.renderPopupWindow(true);
+                                processor.renderPopupWindow(draggedItem, true);
                             }
 
                         }
@@ -86,7 +90,7 @@ public class MultiplyListener implements View.OnDragListener, View.OnTouchListen
                         ((TextView) v).setVisibility(View.VISIBLE);
                         v.invalidate();
                     }
-                    processor.renderPopupWindow(false);
+                    processor.renderPopupWindow(null, false);
                     draggedItem.clear();
                 }
                 break;
