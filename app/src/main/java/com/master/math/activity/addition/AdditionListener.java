@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.master.math.R;
 import com.master.math.activity.util.DraggedItem;
+import com.master.math.activity.util.Util;
 
 public class AdditionListener  implements View.OnDragListener, View.OnTouchListener{
     DraggedItem draggedItem;
@@ -53,10 +54,12 @@ public class AdditionListener  implements View.OnDragListener, View.OnTouchListe
             case DragEvent.ACTION_DROP:
                 if(draggedItem.size() == 2) {
                     if(!validator.validate(draggedItem)){
-
+                        break;
+                    }else{
+                        Util.showWithText(draggedItem.getItem(1),null);
+                        processor.showPopup(draggedItem,true);
                         break;
                     }
-
                 }else{
                     if(draggedItem.getItem(0).getId() == R.id.winAns1 || draggedItem.getItem(0).getId() == R.id.winAns2){
                         ((TextView) v).setVisibility(View.VISIBLE);

@@ -56,7 +56,6 @@ public class MultiplyListener implements View.OnDragListener, View.OnTouchListen
                 if(draggedItem.size() == 2) {
                     if(!validator.validate(draggedItem)){
                         processor.renderPopupWindow(null,false);
-                        processor.invalidateAll(draggedItem);
                         break;
                     }
                     if(processor.setTopNum(draggedItem)){

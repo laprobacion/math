@@ -2,6 +2,7 @@ package com.master.math.activity.addition;
 
 public class AdditionCache {
     private static AdditionCache _this;
+    private String finalAnswer;
     private AdditionCache(){ }
 
     public static AdditionCache get(){
@@ -43,5 +44,15 @@ public class AdditionCache {
     public void clear(){
         this.upperNumbers = null;
         this.lowerNumbers = null;
+        this.upperMultiply = null;
+        this.lowerMultiply = null;
+        setFinalAnswer(null);
+    }
+    public void setFinalAnswer(String finalAnswer){
+        this.finalAnswer = finalAnswer;
+    }
+
+    public String getFinalAnswer() {
+        return finalAnswer;
     }
 }

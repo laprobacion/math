@@ -6,6 +6,8 @@ import android.graphics.BlurMaskFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.View;
+import android.view.animation.CycleInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -18,10 +20,15 @@ public class Util {
     public static final String DOUBLE_SPACES = "  ";
     private static Util _this;
     private static AssetManager instanceAsset;
+    private static TranslateAnimation animate;
     private Util(){}
-    public Util getInstance(){
+    public static Util getInstance(){
         if(_this == null){
             _this = new Util();
+            TranslateAnimation shake = new TranslateAnimation(0, 10, 0, 0);
+            shake.setDuration(500);
+            shake.setInterpolator(new CycleInterpolator(7));
+            _this.animate = shake;
         }
         return _this;
     }
@@ -56,7 +63,7 @@ public class Util {
         return tv;
     }
     public static void showWithText(TextView tv, String txt){
-        tv.setText(txt);
+        tv.setText(txt == null ? tv.getText().toString() : txt);
         tv.setTextColor(Color.argb(255, 255, 255, 255));
         tv.setVisibility(View.VISIBLE);
         tv.setBackground(null);
@@ -75,6 +82,16 @@ public class Util {
     public static void hide(TextView tv){
         tv.setVisibility(View.INVISIBLE);
         tv.invalidate();
+    }
+    public static void hide(TextView... tvs){
+        for(TextView tv: tvs){
+            hide(tv);
+        }
+    }
+    public static void show(TextView... tvs){
+        for(TextView tv: tvs){
+            showWithText(tv,null);
+        }
     }
     public static void blur(TextView... tvs){
         for(TextView tv: tvs){
@@ -95,5 +112,8 @@ public class Util {
                 tv.getPaint().setMaskFilter(null);
             }
         }
+    }
+    public static TranslateAnimation shakeError() {
+        return Util.getInstance().animate;
     }
 }

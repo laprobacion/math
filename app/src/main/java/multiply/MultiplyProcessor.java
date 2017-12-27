@@ -1,6 +1,7 @@
 package multiply;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.view.View;
@@ -9,6 +10,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.master.math.R;
+import com.master.math.activity.AdditionActivity;
+import com.master.math.activity.MainActivity;
+import com.master.math.activity.addition.AdditionCache;
 import com.master.math.activity.util.DraggedItem;
 import com.master.math.activity.util.Util;
 
@@ -84,9 +88,50 @@ public class MultiplyProcessor {
                     Util.showWithText(topNum3, topNum3Holder);
                 }
                 Util.showWithText(totalAns3, totalAns3Holder);
-                Util.showWithText(add,"add");
+                if(isUpperOrLowerZero()){
+                    MultiplyCache.getInstance().setFinalAns(getFinalValue());
+                    Util.showWithText(add,"Done!");
+                    setAddOnClick();
+                }else{
+                    Util.showWithText(add,"add");
+                    setAddOnClick();
+                }
+                this.initializer.getValidator().removeListeners();
             }
         }
+    }
+    private boolean isUpperOrLowerZero(){
+        int upper = Integer.valueOf(finalAnswerGroup1.getText().toString().trim());
+        int lower = Integer.valueOf(totalAns3.getText().toString().trim());
+        return upper == 0 || lower == 0;
+    }
+    private String getFinalValue(){
+        int upper = Integer.valueOf(finalAnswerGroup1.getText().toString().trim());
+        int lower = Integer.valueOf(totalAns3.getText().toString().trim());
+        int fin = upper + lower;
+        return String.valueOf(fin);
+    }
+    private void setAddOnClick(){
+        add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(MultiplyCache.getInstance().getFinalAns() == null){
+                    AdditionCache.get().clear();
+                    AdditionCache.get().setNumbers(addString(finalAnswerGroup1.getText().toString()),addString(totalAns3.getText().toString()));
+                    AdditionCache.get().setMultiplyNumbers(num1.getText().toString() + num2.getText().toString(),num4.getText().toString() + num3.getText().toString());
+                    activity.startActivity(new Intent(activity, AdditionActivity.class));
+                }else{
+                    activity.finish();
+                }
+
+            }
+        });
+    }
+    private String addString(String num){
+        if(num.length() == 3){
+            return " " + num;
+        }
+        return num;
     }
     private void fadeBackground(boolean isFade){
         if(isFade){
@@ -248,8 +293,13 @@ public class MultiplyProcessor {
         Util.hide(draggedItem.getItem(0));
         Util.hide(totalAns1);
         Util.hide(totalAns2);
-        MultiplyCache.getInstance().setNums(null);
         step.setStep(MultiplyStep.STEP_5);
+        if(num4.getVisibility() == View.INVISIBLE){
+            MultiplyCache.getInstance().setFinalAns(finalAnswerGroup1.getText().toString());
+            Util.showWithText(add,"Done!");
+            setAddOnClick();
+            this.initializer.getValidator().removeListeners();
+        }
     }
     public void setTotalAns3(DraggedItem draggedItem){
         String txt = "";
@@ -304,13 +354,6 @@ public class MultiplyProcessor {
         }
         Util.showWithText(finalAnswerGroup1, txt);
         Util.removeListeners(finalAnswerGroup1);
-    }
-    public void invalidateAll(DraggedItem draggedItem){
-        for(TextView v : draggedItem.getDragItems()){
-            v.setVisibility(View.VISIBLE);
-            v.invalidate();
-        }
-        draggedItem.clear();
     }
 
 }

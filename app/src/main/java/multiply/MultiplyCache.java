@@ -4,7 +4,12 @@ package multiply;
 public class MultiplyCache {
 
     private static MultiplyCache _this;
+    private String finalAns;
     private int[] nums;
+    public void clear(){
+        finalAns = null;
+        setNums(null);
+    }
     public static MultiplyCache getInstance(){
         if(_this == null){
             _this = new MultiplyCache();
@@ -17,5 +22,13 @@ public class MultiplyCache {
     }
     public int[] getNums(){
         return nums;
+    }
+
+    public String getFinalAns() {
+        return finalAns;
+    }
+
+    public void setFinalAns(String finalAns) {
+        this.finalAns = finalAns;
     }
 }

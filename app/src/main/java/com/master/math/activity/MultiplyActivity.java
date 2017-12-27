@@ -18,6 +18,8 @@ import com.master.math.activity.util.Util;
 import multiply.MultiplyCache;
 import multiply.MultiplyProcessor;
 
+import static com.master.math.activity.util.Util.shakeError;
+
 public class MultiplyActivity extends AppCompatActivity  {
 
     MultiplyProcessor processor;
@@ -32,7 +34,8 @@ public class MultiplyActivity extends AppCompatActivity  {
         userAns = (EditText) findViewById(R.id.userAns);
         parentMultiply = (RelativeLayout) findViewById(R.id.parentMultiply);
         formulaPop = Util.getTextViewWithFont(this,R.id.formulaPop);
-        //MultiplyCache.getInstance().setNums(8,7,1,1);
+        MultiplyCache.getInstance().clear();
+        //MultiplyCache.getInstance().setNums(1,0,0,1);
         if(MultiplyCache.getInstance().getNums() != null){
             processor = new MultiplyProcessor(this,getAssets(),MultiplyCache.getInstance().getNums());
         }else{
@@ -65,10 +68,5 @@ public class MultiplyActivity extends AppCompatActivity  {
         }
         return true;
     }
-    public TranslateAnimation shakeError() {
-        TranslateAnimation shake = new TranslateAnimation(0, 10, 0, 0);
-        shake.setDuration(500);
-        shake.setInterpolator(new CycleInterpolator(7));
-        return shake;
-    }
+
 }

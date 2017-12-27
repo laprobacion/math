@@ -29,15 +29,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btnAdd = (Button) findViewById(R.id.btnAdd);
-        btnAdd.setTypeface(typeface);
-        btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, AdditionActivity.class));
-            }
-        });
-
         Util.setAsset(getAssets());
 
     }
