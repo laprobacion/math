@@ -43,6 +43,24 @@ public class Util {
         }
         return n.toString();
     }
+    public static String generate2DigsRandomNumbers(int max){
+        Random rand = new Random();
+        Integer  n = 0;
+        n = rand.nextInt(max) + 1;
+        return n.toString();
+    }
+    public static String[] generateProperFractions(){
+        String numerator = generate2DigsRandomNumbers(50);
+        String denominator = generate2DigsRandomNumbers(70);
+        while(true){
+            if(Integer.valueOf(numerator) > Integer.valueOf(denominator)){
+                denominator = generate2DigsRandomNumbers(75);
+            }else{
+                break;
+            }
+        }
+        return new String[]{numerator,denominator};
+    }
     public static void setAsset(AssetManager asset){
         instanceAsset = asset;
     }

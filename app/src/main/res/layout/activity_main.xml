@@ -11,10 +11,10 @@
 
 
     <Button
-        android:id="@+id/btnMultiply"
+        android:id="@+id/btnCompareFraction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Multiply"
+        android:text="xx"
         android:textSize="32dp"
         android:background="@null"
         android:textColor="#ffffff"

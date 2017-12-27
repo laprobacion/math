@@ -21,7 +21,8 @@
             android:name=".activity.FractionActivity"
             android:label="@string/title_activity_fraction"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
-        <activity android:name=".activity.AdditionActivity"></activity>
+        <activity android:name=".activity.AdditionActivity" />
+        <activity android:name=".activity.FormActivity"></activity>
     </application>
 
 </manifest>

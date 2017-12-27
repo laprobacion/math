@@ -18,18 +18,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-
-        Button btnMultiply = (Button) findViewById(R.id.btnMultiply);
+        Util.setAsset(getAssets());
+        Button btnCompareFraction = (Button) findViewById(R.id.btnCompareFraction);
         Typeface typeface = Typeface.createFromAsset(getAssets(),"fonts/EraserDust.ttf");
-        btnMultiply.setTypeface(typeface);
-        btnMultiply.setOnClickListener(new View.OnClickListener() {
+        btnCompareFraction.setTypeface(typeface);
+        btnCompareFraction.setText("Compare Fractions");
+        btnCompareFraction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, MultiplyActivity.class));
+                startActivity(new Intent(MainActivity.this, FractionActivity.class));
             }
         });
 
-        Util.setAsset(getAssets());
+
 
     }
 }

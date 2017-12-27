@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.master.math.R;
+import com.master.math.activity.addition.AdditionCache;
 import com.master.math.activity.util.Util;
 
 import multiply.MultiplyCache;
@@ -34,7 +35,7 @@ public class MultiplyActivity extends AppCompatActivity  {
         userAns = (EditText) findViewById(R.id.userAns);
         parentMultiply = (RelativeLayout) findViewById(R.id.parentMultiply);
         formulaPop = Util.getTextViewWithFont(this,R.id.formulaPop);
-        MultiplyCache.getInstance().clear();
+        AdditionCache.get().clear();
         //MultiplyCache.getInstance().setNums(1,0,0,1);
         if(MultiplyCache.getInstance().getNums() != null){
             processor = new MultiplyProcessor(this,getAssets(),MultiplyCache.getInstance().getNums());
@@ -57,6 +58,15 @@ public class MultiplyActivity extends AppCompatActivity  {
         });
 
     }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if(AdditionCache.get().getFinalAnswer() !=null){
+            finish();
+        }
+    }
+
     private boolean validateInput(){
         try{
             if(userAns.getText().toString().trim().equals("")) {

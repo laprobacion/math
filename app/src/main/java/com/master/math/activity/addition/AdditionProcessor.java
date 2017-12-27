@@ -119,6 +119,7 @@ public class AdditionProcessor {
             Util.showWithText(ans2,finalAnswer);
             AdditionCache.get().setFinalAnswer(finalAnswer);
             Util.showWithText(done,"Done");
+            done.setTextSize(30);
             addOnClick();
             return;
         }
