@@ -11,9 +11,24 @@
 
 
     <Button
-        android:id="@+id/btnCompareFraction"
-        android:layout_width="wrap_content"
+        android:id="@+id/btnLCD"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Get LCD"
+        android:background="@null"
+        android:textSize="32dp"
+        android:textAlignment="center"
+        android:textColor="#ffffff"
+        android:layout_below="@+id/btnCompareFraction"
+        android:layout_alignLeft="@+id/btnCompareFraction"
+        android:layout_alignStart="@+id/btnCompareFraction"
+        android:layout_marginTop="28dp" />
+
+    <Button
+        android:id="@+id/btnCompareFraction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
         android:text="xx"
         android:textSize="32dp"
         android:background="@null"

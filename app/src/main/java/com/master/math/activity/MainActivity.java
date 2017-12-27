@@ -30,6 +30,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button btnLCD = (Button) findViewById(R.id.btnLCD);
+        btnLCD.setTypeface(typeface);
+        btnLCD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, LCDMainActivity.class));
+            }
+        });
 
 
     }

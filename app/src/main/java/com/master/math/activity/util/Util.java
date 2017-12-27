@@ -14,6 +14,9 @@ import android.widget.TextView;
 import com.master.math.R;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 
 public class Util {
@@ -49,6 +52,51 @@ public class Util {
         n = rand.nextInt(max) + 1;
         return n.toString();
     }
+    private static String generateCompositeNumbers(){
+        int num = Integer.valueOf(generate2DigsRandomNumbers(20));
+        while(true) {
+            int count = 0;
+            for (int i = 1; i <= num; i++) {
+                if ((num % i) == 0) {
+                    count++;
+                }
+            }
+            if(count > 2){
+                break;
+            }else{
+                num = Integer.valueOf(generate2DigsRandomNumbers(20));
+            }
+        }
+        return String.valueOf(num);
+    }
+    private static List<String> generateDenominators(){
+        List<String> denoms = new ArrayList<String>();
+        denoms.add(generateCompositeNumbers());
+        denoms.add(generateCompositeNumbers());
+        denoms.add(generateCompositeNumbers());
+        Collections.sort(denoms);
+        return denoms;
+    }
+    public static String[][] generateProperFraction(){
+        List<String> denoms = generateDenominators();
+        String [][] fractions = new String [3][2];
+        int i = 0;
+        for(String s : denoms){
+            while(true){
+                int j = 0;
+                String numerator = generate2DigsRandomNumbers(10);
+                if(Integer.valueOf(numerator) > Integer.valueOf(s) ){
+                    numerator = generate2DigsRandomNumbers(10);
+                }else{
+                    fractions[i][j] = numerator;
+                    fractions[i][j+1] = s;
+                    break;
+                }
+            }
+            i++;
+        }
+        return fractions;
+    }
     public static String[] generateProperFractions(){
         String numerator = generate2DigsRandomNumbers(50);
         String denominator = generate2DigsRandomNumbers(70);
@@ -71,6 +119,11 @@ public class Util {
     }
     public static TextView getTextViewWithFont(Activity activity,int id){
         TextView tv =(TextView) activity.findViewById(id);
+        tv.setTypeface(Typeface.createFromAsset(instanceAsset,"fonts/EraserDust.ttf"));
+        tv.setTextColor(Color.argb(255, 255, 255, 255));
+        return tv;
+    }
+    public static TextView getTextViewWithFont(TextView tv){
         tv.setTypeface(Typeface.createFromAsset(instanceAsset,"fonts/EraserDust.ttf"));
         tv.setTextColor(Color.argb(255, 255, 255, 255));
         return tv;

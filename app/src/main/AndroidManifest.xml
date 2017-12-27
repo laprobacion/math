@@ -22,7 +22,9 @@
             android:label="@string/title_activity_fraction"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
         <activity android:name=".activity.AdditionActivity" />
-        <activity android:name=".activity.FormActivity"></activity>
+        <activity android:name=".activity.FormActivity" />
+        <activity android:name=".activity.LCDMainActivity" />
+        <activity android:name=".activity.LCDActivity"></activity>
     </application>
 
 </manifest>
