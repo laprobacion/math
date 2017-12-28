@@ -3,7 +3,6 @@ package multiply;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.AssetManager;
-import android.graphics.Color;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
@@ -11,26 +10,27 @@ import android.widget.TextView;
 
 import com.master.math.R;
 import com.master.math.activity.AdditionActivity;
-import com.master.math.activity.MainActivity;
 import com.master.math.activity.addition.AdditionCache;
+import com.master.math.activity.base.ActionStep;
+import com.master.math.activity.base.Initializer;
+import com.master.math.activity.base.Processor;
 import com.master.math.activity.util.DraggedItem;
 import com.master.math.activity.util.Util;
 
 import static com.master.math.activity.util.Util.generateRandomNumbers;
 
-public class MultiplyProcessor {
+public class MultiplyProcessor implements Processor {
     private TextView num1,num2,num3,num4,multiply,line,formulaPop, ans1, ans2,topNum,topNum2,topNum3, totalAns1, totalAns2,totalAns3,totalAns4, finalAnswerGroup1, add;
     private EditText userAns;
     private RelativeLayout popupMultiply,parentMultiply;
-    private MultiplyInitializer initializer;
+    private Initializer initializer;
     private Integer popupAnswer;
     private Activity activity;
-    private MultiplyStep step;
     private int formulaPopAnswer;
     private String topNum3Holder = "empty";
     private String totalAns3Holder = "empty";
+    private MultiplyValidator validator;
     public MultiplyProcessor(Activity activity, AssetManager asset, int... i){
-        step = new MultiplyStep();
         this.activity = activity;
         userAns = Util.getEditTextWithFont(activity, R.id.userAns);
         finalAnswerGroup1 = Util.getTextViewWithFont(activity, R.id.finalAnswerGroup1);
@@ -53,9 +53,10 @@ public class MultiplyProcessor {
         formulaPop = Util.getTextViewWithFontInvisible(activity, R.id.formulaPop);
         popupMultiply = (RelativeLayout) activity.findViewById(R.id.popupMultiply);
         parentMultiply = (RelativeLayout) activity.findViewById(R.id.parentMultiply);
-        this.initializer = new MultiplyInitializer(step,this,num1,num2,num3,num4,topNum,topNum2,topNum3,multiply,line,ans1,ans2,totalAns1,totalAns2,totalAns3,totalAns4,finalAnswerGroup1);
+        validator = new MultiplyValidator();
+        this.initializer = new Initializer(new MultiplyListener(this,validator));
+        this.initializer.setDraggables(num1,num2,num3,ans1,ans2,num4,topNum,topNum2,topNum3,totalAns1,totalAns2,totalAns3,totalAns4,finalAnswerGroup1,add);
         setNumbers(i);
-        this.initializer.getValidator().addDraggableItems(num1,num2,num3,ans1,ans2,num4,topNum,topNum2,topNum3,totalAns1,totalAns2,totalAns3,totalAns4,finalAnswerGroup1,add);
         renderPopupWindow(null, false);
         renderAnswerWindow(false);
     }
@@ -82,7 +83,7 @@ public class MultiplyProcessor {
     }
 
     private void maskStepTopNum3TotalAns3(boolean mask){
-        if(step.getStep() == MultiplyStep.STEP_9){
+        if(this.validator.getActionStep().getStep() == ActionStep.STEP_9){
             if(mask){
                 if(topNum3.getVisibility() == View.VISIBLE){
                     Util.showWithText(topNum3, topNum3Holder);
@@ -96,7 +97,7 @@ public class MultiplyProcessor {
                     Util.showWithText(add,"add");
                     setAddOnClick();
                 }
-                this.initializer.getValidator().removeListeners();
+                this.validator.removeListeners();
             }
         }
     }
@@ -159,13 +160,16 @@ public class MultiplyProcessor {
         int n2 = draggedItem.getItem(1).getText().toString() == Util.DOUBLE_SPACES ? 0 : Integer.valueOf(draggedItem.getItem(1).getText().toString());
         Integer ans = n1 * n2;
         String formula = "";
-        if(step.getStep() == MultiplyStep.STEP_1 || step.getStep() == MultiplyStep.STEP_2 || step.getStep() == MultiplyStep.STEP_5 || step.getStep() == MultiplyStep.STEP_7 ) {
+        if(this.validator.getActionStep().getStep() == ActionStep.STEP_1 ||
+                this.validator.getActionStep().getStep() == ActionStep.STEP_2 ||
+                this.validator.getActionStep().getStep() == ActionStep.STEP_5 ||
+                this.validator.getActionStep().getStep() == ActionStep.STEP_7 ) {
             formula = n1 + " x " + n2 + " =      " ;
-        }else if(step.getStep() == MultiplyStep.STEP_8){
+        }else if(this.validator.getActionStep().getStep() == ActionStep.STEP_8){
             ans = Integer.valueOf(n1) + Integer.valueOf(topNum3.getText().toString().trim());
             formula = n1 + " + " + topNum3.getText().toString() + " =      ";
             setTotalAns4(draggedItem, ans);
-        }else if(step.getStep() == MultiplyStep.STEP_3){
+        }else if(this.validator.getActionStep().getStep() == ActionStep.STEP_3){
             ans = Integer.valueOf(n1) + Integer.valueOf(topNum.getText().toString().trim());
             formula = n1 + " + " + topNum.getText().toString() + " =      ";
             setTopNum2(draggedItem);
@@ -196,8 +200,8 @@ public class MultiplyProcessor {
             Util.hide(draggedItem.getItem(0));
             topNum3.setTextSize(33);
             Util.showWithText(topNum3, draggedItem.getItem(0).getText().toString());
-            if(this.initializer.getValidator().isBoxedEmpty()){
-                step.increment();
+            if(this.validator.isBoxedEmpty()){
+                this.validator.getActionStep().increment();
             }
             return true;
         }
@@ -232,7 +236,7 @@ public class MultiplyProcessor {
 
     private void populateAnsBox(){
         String strAns = popupAnswer.toString();
-        if(step.getStep() == MultiplyStep.STEP_1) {
+        if(this.validator.getActionStep().getStep() == ActionStep.STEP_1) {
             if (strAns.length() == 2) {
                 Util.showWithText(ans1, Character.toString(strAns.charAt(1)));
                 Util.showWithText(ans2, Character.toString(strAns.charAt(0)));
@@ -241,17 +245,17 @@ public class MultiplyProcessor {
                 Util.showWithText(ans1, Character.toString(strAns.charAt(0)));
             }
             Util.showWithBG(totalAns1, activity);
-        }else if(step.getStep() == MultiplyStep.STEP_2){
+        }else if(this.validator.getActionStep().getStep() == ActionStep.STEP_2){
             if (!topNum.getText().equals("0")) {
                 Util.showWithBG(topNum2, activity);
             }else{
                 Util.showWithBG(totalAns2, activity);
             }
             Util.showWithText(ans2, strAns);
-        }else if(step.getStep() == MultiplyStep.STEP_3){
+        }else if(this.validator.getActionStep().getStep() == ActionStep.STEP_3){
             Util.showWithBG(totalAns2,activity);
             Util.showWithText(ans2, strAns);
-        }else if(step.getStep() == MultiplyStep.STEP_5){
+        }else if(this.validator.getActionStep().getStep() == ActionStep.STEP_5){
             if (strAns.length() == 2) {
                 Util.showWithText(ans1, Character.toString(strAns.charAt(1)));
                 Util.showWithText(ans2, Character.toString(strAns.charAt(0)));
@@ -260,7 +264,7 @@ public class MultiplyProcessor {
                 Util.showWithText(ans1, Character.toString(strAns.charAt(0)));
             }
             Util.showWithBG(totalAns3,activity);
-        }else if(step.getStep() == MultiplyStep.STEP_7){
+        }else if(this.validator.getActionStep().getStep() == ActionStep.STEP_7){
             Util.showWithText(ans2, strAns);
             Util.showWithBG(totalAns4,activity);
         }
@@ -271,10 +275,11 @@ public class MultiplyProcessor {
             popupAnswer = Integer.valueOf(userAns.getText().toString().trim());
             ans2.setText("");
             ans1.setText("");
-            if(step.getStep() >= MultiplyStep.STEP_1 && step.getStep() <= MultiplyStep.STEP_5 || step.getStep() ==  MultiplyStep.STEP_7){
+            if((this.validator.getActionStep().getStep() >= ActionStep.STEP_1 && this.validator.getActionStep().getStep() <= ActionStep.STEP_5)
+                    || this.validator.getActionStep().getStep() ==  ActionStep.STEP_7){
                 if (popupAnswer != null) {
                     populateAnsBox();
-                    step.increment();
+                    this.validator.getActionStep().increment();
                 }
             }
         }else{
@@ -293,12 +298,12 @@ public class MultiplyProcessor {
         Util.hide(draggedItem.getItem(0));
         Util.hide(totalAns1);
         Util.hide(totalAns2);
-        step.setStep(MultiplyStep.STEP_5);
+        this.validator.getActionStep().setStep(ActionStep.STEP_5);
         if(num4.getVisibility() == View.INVISIBLE){
             MultiplyCache.getInstance().setFinalAns(finalAnswerGroup1.getText().toString());
             Util.showWithText(add,"Done!");
             setAddOnClick();
-            this.initializer.getValidator().removeListeners();
+            this.validator.removeListeners();
         }
     }
     public void setTotalAns3(DraggedItem draggedItem){
@@ -310,8 +315,8 @@ public class MultiplyProcessor {
         }
         Util.showWithText(totalAns3, txt);
         Util.hide(draggedItem.getItem(0));
-        if(this.initializer.getValidator().isBoxedEmpty()){
-            step.increment();
+        if(this.validator.isBoxedEmpty()){
+            this.validator.getActionStep().increment();
         }
     }
     public void setTotalAns4(DraggedItem draggedItem, int ans){
@@ -329,7 +334,7 @@ public class MultiplyProcessor {
         topNum3.setTextSize(20);
         topNum3.invalidate();
         Util.hide(draggedItem.getItem(0));
-        step.increment();
+        this.validator.getActionStep().increment();
     }
     public void setTotalAns4(DraggedItem draggedItem){
         String above = finalAnswerGroup1.getText().toString().trim();
@@ -343,7 +348,7 @@ public class MultiplyProcessor {
         totalAns3Holder = under;
         Util.hide(totalAns4);
         Util.hide(draggedItem.getItem(0));
-        step.increment();
+        this.validator.getActionStep().increment();
     }
     private void setFin(int fin){
         String txt = "";

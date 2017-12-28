@@ -8,15 +8,18 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.master.math.R;
+import com.master.math.activity.base.ActionStep;
+import com.master.math.activity.base.Initializer;
+import com.master.math.activity.base.Processor;
 import com.master.math.activity.util.DraggedItem;
 import com.master.math.activity.util.Util;
 
 import static com.master.math.activity.util.Util.shakeError;
 
-public class AdditionProcessor {
+public class AdditionProcessor implements Processor{
     private Activity activity;
-    private AdditionInitializer initializer;
-    private AdditionStep step;
+    private Initializer initializer;
+    private AdditionValidator validator;
     private TextView mulDown, mulUp, mulSymbol, numUp1,numUp2,numUp3,numUp4,
             numDown1,numDown2,numDown3,numDown4,plus,lineAdd,topNum1,
             topNum2,topNum3,ans1,ans2,ans3,ans4,winAns1,winAns2,formula, done;
@@ -52,13 +55,9 @@ public class AdditionProcessor {
         ans4 = Util.getTextViewWithFontInvisible(activity, R.id.ans4);
         winAns1 = Util.getTextViewWithFontInvisible(activity, R.id.winAns1);
         winAns2 = Util.getTextViewWithFontInvisible(activity, R.id.winAns2);
-        this.step = new AdditionStep();
-        this.initializer = new AdditionInitializer(this.step,this,
-                numUp1,numUp2,numUp3,numUp4,
-                numDown1,numDown2,numDown3,numDown4,
-                topNum1,topNum2,topNum3,
-                ans1,ans2,ans3,ans4,winAns1,winAns2);
-        this.initializer.getValidator().addDraggableItems(numUp1,numUp2,numUp3,numUp4,
+        validator = new AdditionValidator();
+        this.initializer = new Initializer(new AdditionListener(this,validator));
+        this.initializer.setDraggables(numUp1,numUp2,numUp3,numUp4,
                 numDown1,numDown2,numDown3,numDown4,
                 topNum1,topNum2,topNum3,
                 ans1,ans2,ans3,ans4,winAns1,winAns2);
@@ -113,7 +112,7 @@ public class AdditionProcessor {
         }
     }
     private void allowDrop(DraggedItem draggedItem){
-        if(step.getStep() == AdditionStep.STEP_8){
+        if(validator.getActionStep().getStep() == ActionStep.STEP_8){
             finalAnswer = draggedItem.getItem(0).getText().toString() + ans3.getText().toString() + ans2.getText().toString() + ans1.getText().toString();
             Util.hide(draggedItem.getItem(0),ans1,ans2,ans3,ans4);
             Util.showWithText(ans2,finalAnswer);
@@ -126,7 +125,7 @@ public class AdditionProcessor {
         Util.showWithText(draggedItem.getItem(1),draggedItem.getItem(0).getText().toString());
         Util.hide(draggedItem.getItem(0));
         if(isWindowAnsEmpty()){
-            step.increment();
+            validator.getActionStep().increment();
         }
     }
     private void addOnClick(){
@@ -141,8 +140,8 @@ public class AdditionProcessor {
         return winAns1.getVisibility() == View.INVISIBLE && winAns2.getVisibility() == View.INVISIBLE;
     }
     private boolean isStepAdding(){
-        return step.getStep() == AdditionStep.STEP_1 || step.getStep() == AdditionStep.STEP_3
-                || step.getStep() == AdditionStep.STEP_5 || step.getStep() == AdditionStep.STEP_7;
+        return validator.getActionStep().getStep() == ActionStep.STEP_1 || validator.getActionStep().getStep() == ActionStep.STEP_3
+                || validator.getActionStep().getStep() == ActionStep.STEP_5 || validator.getActionStep().getStep() == ActionStep.STEP_7;
     }
     public boolean isPopupOpen(){
       return popup.getVisibility() == View.VISIBLE;
@@ -153,14 +152,14 @@ public class AdditionProcessor {
     public void setWindowAnswers(){
         String strAns = String.valueOf(formulaAns);
         if(strAns.length() == 2){
-            if(step.getStep() == AdditionStep.STEP_7){
+            if(validator.getActionStep().getStep() == ActionStep.STEP_7){
                 Util.showWithText(winAns2,strAns);
             }else{
                 Util.showWithText(winAns2,String.valueOf(strAns.charAt(0)));
                 Util.showWithText(winAns1,String.valueOf(strAns.charAt(1)));
             }
         }else{
-            if(step.getStep() == AdditionStep.STEP_7){
+            if(validator.getActionStep().getStep() == ActionStep.STEP_7){
                 Util.showWithText(winAns2,strAns);
             }else{
                 Util.showWithText(winAns1,String.valueOf(strAns.charAt(0)));
@@ -170,27 +169,27 @@ public class AdditionProcessor {
     }
     private void showDrop(){
         String strAns = String.valueOf(formulaAns);
-        if(step.getStep() == AdditionStep.STEP_1){
+        if(validator.getActionStep().getStep() == ActionStep.STEP_1){
             if(strAns.length() == 2){
                 Util.showWithBG(topNum1,activity);
             }
             Util.showWithBG(ans1,activity);
-            step.increment();
-        }else if(step.getStep() == AdditionStep.STEP_3){
+            validator.getActionStep().increment();
+        }else if(validator.getActionStep().getStep() == ActionStep.STEP_3){
             if(strAns.length() == 2){
                 Util.showWithBG(topNum2,activity);
             }
             Util.showWithBG(ans2,activity);
-            step.increment();
-        }else if(step.getStep() == AdditionStep.STEP_5){
+            validator.getActionStep().increment();
+        }else if(validator.getActionStep().getStep() == ActionStep.STEP_5){
             if(strAns.length() == 2){
                 Util.showWithBG(topNum3,activity);
             }
             Util.showWithBG(ans3,activity);
-            step.increment();
-        }else if(step.getStep() == AdditionStep.STEP_7){
+            validator.getActionStep().increment();
+        }else if(validator.getActionStep().getStep() == ActionStep.STEP_7){
             Util.showWithBG(ans4,activity);
-            step.increment();
+            validator.getActionStep().increment();
         }
     }
     public boolean isUserAnsCorrect(){
@@ -205,13 +204,13 @@ public class AdditionProcessor {
     private void fillFormula(DraggedItem draggedItem){
         String strFormula = "";
         userAns.setText("");
-        if(step.getStep() == AdditionStep.STEP_1){
+        if(validator.getActionStep().getStep() == ActionStep.STEP_1){
             strFormula = setFormulaAns(null, draggedItem);
-        }else if(step.getStep() == AdditionStep.STEP_3){
+        }else if(validator.getActionStep().getStep() == ActionStep.STEP_3){
             strFormula = setFormulaAns(topNum1, draggedItem);
-        }else if(step.getStep() == AdditionStep.STEP_5){
+        }else if(validator.getActionStep().getStep() == ActionStep.STEP_5){
             strFormula = setFormulaAns(topNum2, draggedItem);
-        }else if(step.getStep() == AdditionStep.STEP_7){
+        }else if(validator.getActionStep().getStep() == ActionStep.STEP_7){
             strFormula = setFormulaAns(topNum3, draggedItem);
         }
         Util.showWithText(formula,strFormula);

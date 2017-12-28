@@ -1,36 +1,20 @@
 package multiply;
 
-import android.content.ClipData;
 import android.view.DragEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
 import com.master.math.R;
-import com.master.math.activity.util.DraggedItem;
+import com.master.math.activity.base.ActionStep;
+import com.master.math.activity.base.DragListener;
 
-public class MultiplyListener implements View.OnDragListener, View.OnTouchListener{
-    DraggedItem draggedItem;
+public class MultiplyListener extends DragListener{
+
     MultiplyProcessor processor;
-    MultiplyValidator validator;
 
     public MultiplyListener(MultiplyProcessor processor, MultiplyValidator validator){
-        draggedItem = new DraggedItem();
+        super(validator);
         this.processor = processor;
-        this.validator = validator;
-    }
-
-    @Override
-    public boolean onTouch(View view, MotionEvent event) {
-        draggedItem.add(0,(TextView) view);
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            ClipData data = ClipData.newPlainText("", ((TextView)view).getText().toString());
-            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
-            view.startDrag(data, shadowBuilder, view, 0);
-            return true;
-        } else {
-            return false;
-        }
     }
 
     @Override
@@ -50,11 +34,11 @@ public class MultiplyListener implements View.OnDragListener, View.OnTouchListen
                 v.invalidate();
                 break;
             case DragEvent.ACTION_DROP:
-                if(validator.isFinished()){
+                if(getValidator().isFinished()){
                     break;
                 }
                 if(draggedItem.size() == 2) {
-                    if(!validator.validate(draggedItem)){
+                    if(!getValidator().validate(draggedItem)){
                         processor.renderPopupWindow(null,false);
                         break;
                     }
@@ -72,9 +56,9 @@ public class MultiplyListener implements View.OnDragListener, View.OnTouchListen
                         }else if(draggedItem.getItem(0).getId() == R.id.ans1 && draggedItem.getItem(1).getId() == R.id.totalAns3){
                             processor.setTotalAns3(draggedItem);
                         }else{
-                            if((validator.getStep().getStep() == MultiplyStep.STEP_8 || validator.getStep().getStep() == MultiplyStep.STEP_9)
-                                    && validator.get(R.id.topNum3).getText().toString().indexOf("0") == 0){
-                                if(validator.getStep().getStep() == MultiplyStep.STEP_8){
+                            if((getValidator().getActionStep().getStep() == ActionStep.STEP_8 || getValidator().getActionStep().getStep() == ActionStep.STEP_9)
+                                    && getValidator().get(R.id.topNum3).getText().toString().indexOf("0") == 0){
+                                if(getValidator().getActionStep().getStep() == ActionStep.STEP_8){
                                     processor.setTotalAns4(draggedItem);
                                 }
                                 processor.renderPopupWindow(null, false);

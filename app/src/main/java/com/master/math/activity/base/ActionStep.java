@@ -1,7 +1,6 @@
-package multiply;
+package com.master.math.activity.base;
 
-
-public class MultiplyStep {
+public class ActionStep {
     private int step;
     public static final int STEP_1 = 1;
     public static final int STEP_2 = 2;
@@ -12,7 +11,7 @@ public class MultiplyStep {
     public static final int STEP_7 = 7;
     public static final int STEP_8 = 8;
     public static final int STEP_9 = 9;
-    public MultiplyStep(){
+    public ActionStep(){
         step = 1;
     }
     public void increment(){

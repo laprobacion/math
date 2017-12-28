@@ -7,31 +7,17 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.master.math.R;
+import com.master.math.activity.base.DragListener;
 import com.master.math.activity.util.DraggedItem;
 import com.master.math.activity.util.Util;
 
-public class CompareFractionListener implements View.OnDragListener, View.OnTouchListener{
-    DraggedItem draggedItem;
+public class CompareFractionListener extends DragListener{
+
     CompareFractionProcessor processor;
-    CompareFractionValidator validator;
 
     public CompareFractionListener(CompareFractionProcessor processor, CompareFractionValidator validator){
-        draggedItem = new DraggedItem();
+        super(validator);
         this.processor = processor;
-        this.validator = validator;
-    }
-
-    @Override
-    public boolean onTouch(View view, MotionEvent event) {
-        draggedItem.add(0,(TextView) view);
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            ClipData data = ClipData.newPlainText("", ((TextView)view).getText().toString());
-            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
-            view.startDrag(data, shadowBuilder, view, 0);
-            return true;
-        } else {
-            return false;
-        }
     }
 
     @Override
@@ -52,7 +38,7 @@ public class CompareFractionListener implements View.OnDragListener, View.OnTouc
                 break;
             case DragEvent.ACTION_DROP:
                 if(draggedItem.size() == 2) {
-                    if(!validator.validate(draggedItem)){
+                    if(!getValidator().validate(draggedItem)){
                         break;
                     }else{
                         Util.showWithText(draggedItem.getItem(1),null);

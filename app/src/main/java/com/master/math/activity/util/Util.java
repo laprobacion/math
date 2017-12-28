@@ -5,6 +5,8 @@ import android.content.res.AssetManager;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.view.animation.CycleInterpolator;
 import android.view.animation.TranslateAnimation;
@@ -123,6 +125,7 @@ public class Util {
         tv.setTextColor(Color.argb(255, 255, 255, 255));
         return tv;
     }
+
     public static TextView getTextViewWithFont(TextView tv){
         tv.setTypeface(Typeface.createFromAsset(instanceAsset,"fonts/EraserDust.ttf"));
         tv.setTextColor(Color.argb(255, 255, 255, 255));
@@ -135,6 +138,15 @@ public class Util {
     }
     public static void showWithText(TextView tv, String txt){
         tv.setText(txt == null ? tv.getText().toString() : txt);
+        tv.setTextColor(Color.argb(255, 255, 255, 255));
+        tv.setVisibility(View.VISIBLE);
+        tv.setBackground(null);
+        tv.invalidate();
+    }
+    public static void showWithTextUnderlined(TextView tv, String txt){
+        SpannableString content = new SpannableString(txt);
+        content.setSpan(new UnderlineSpan(), 0, txt.length(), 0);
+        tv.setText(content);
         tv.setTextColor(Color.argb(255, 255, 255, 255));
         tv.setVisibility(View.VISIBLE);
         tv.setBackground(null);

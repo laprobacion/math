@@ -8,24 +8,26 @@ import android.widget.TextView;
 import com.master.math.R;
 import com.master.math.activity.FormActivity;
 import com.master.math.activity.MultiplyActivity;
+import com.master.math.activity.base.ActionStep;
+import com.master.math.activity.base.Initializer;
+import com.master.math.activity.base.Processor;
 import com.master.math.activity.util.DraggedItem;
 import com.master.math.activity.util.Util;
 
 import static com.master.math.activity.util.Util.shakeError;
 
 
-public class CompareFractionProcessor {
+public class CompareFractionProcessor implements Processor{
 
     private TextView num1,denom1,line1,multiplyFormula1,multiplyAns1,
             num2,denom2,line2,multiplyFormula2,multiplyAns2,
             compareLine,greaterSign,lessSign,equalSign;
     private Activity activity;
-    private CompareFractionInitializer initializer;
-    private CompareFractionStep step;
+    private Initializer initializer;
     private boolean isFirst;
     private DraggedItem draggedItem;
     private boolean isReady;
-
+    private CompareFractionValidator validator;
     public boolean isReady() {        return isReady;    }
     public void setReady(boolean ready) {        isReady = ready;    }
 
@@ -47,15 +49,16 @@ public class CompareFractionProcessor {
         greaterSign = Util.getTextViewWithFont(activity, R.id.greaterSign);
         lessSign = Util.getTextViewWithFont(activity, R.id.lessSign);
         equalSign = Util.getTextViewWithFont(activity, R.id.equalSign);
-        this.step = new CompareFractionStep();
-        this.initializer = new CompareFractionInitializer(this.step,this,num1,num2,denom1,denom2,greaterSign,lessSign,equalSign,compareLine);
-        this.initializer.getValidator().addDraggableItems(num1,num2,denom1,denom2,greaterSign,lessSign,equalSign,compareLine);
+        this.validator = new CompareFractionValidator();
+        this.initializer = new Initializer(new CompareFractionListener(this, validator));
+        this.initializer.setDraggables(num1,num2,denom1,denom2,greaterSign,lessSign,equalSign,compareLine);
+        this.validator.addDraggableItems();
         setFractions();
     }
 
     public void showPopup(DraggedItem draggedItem){
         this.draggedItem = draggedItem;
-        if(step.getStep() == CompareFractionStep.STEP_1 || step.getStep() == CompareFractionStep.STEP_2){
+        if(validator.getActionStep().getStep() == ActionStep.STEP_1 || validator.getActionStep().getStep() == ActionStep.STEP_2){
             isFirst = isFirst(draggedItem);
             Intent intent = new Intent(activity, FormActivity.class);
             intent.putExtra(FormActivity.NUM_1,draggedItem.getItem(0).getText().toString());
@@ -75,7 +78,7 @@ public class CompareFractionProcessor {
             }
             if(sign == draggedItem.getItem(0).getId()){
                 Util.showWithText(compareLine,draggedItem.getItem(0).getText().toString());
-                step.increment();
+                validator.getActionStep().increment();
             }else{
                 greaterSign.startAnimation(shakeError());
                 lessSign.startAnimation(shakeError());
@@ -86,7 +89,7 @@ public class CompareFractionProcessor {
     }
 
     public int getStep(){
-        return step.getStep();
+        return validator.getActionStep().getStep();
     }
     public void execute(){
         String formula = draggedItem.getItem(0).getText().toString() + " x " + draggedItem.getItem(1).getText().toString() + " = ";
@@ -94,11 +97,11 @@ public class CompareFractionProcessor {
         if(isFirst){
             Util.showWithText(multiplyFormula1, formula);
             Util.showWithText(multiplyAns1, String.valueOf(ans));
-            step.increment();
+            validator.getActionStep().increment();
         }else{
             Util.showWithText(multiplyFormula2, formula);
             Util.showWithText(multiplyAns2, String.valueOf(ans));
-            step.increment();
+            validator.getActionStep().increment();
         }
     }
 

@@ -1,22 +1,20 @@
-package com.master.math.activity.addition;
-
+package com.master.math.activity.lcdmain;
 
 import android.view.DragEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.master.math.R;
 import com.master.math.activity.base.DragListener;
+import com.master.math.activity.lcd.LCDProcessor;
 import com.master.math.activity.util.Util;
 
-public class AdditionListener extends DragListener{
-    AdditionProcessor processor;
+public class LCDMainListener extends DragListener{
 
-    public AdditionListener(AdditionProcessor processor, AdditionValidator validator){
+    private LCDMainProcessor processor;
+    public LCDMainListener(LCDMainProcessor processor, LCDValidator validator){
         super(validator);
         this.processor = processor;
     }
-
     @Override
     public boolean onDrag(View v, DragEvent event) {
         int action = event.getAction();
@@ -39,14 +37,12 @@ public class AdditionListener extends DragListener{
                         break;
                     }else{
                         Util.showWithText(draggedItem.getItem(1),null);
-                        processor.showPopup(draggedItem,true);
+                        processor.allowDrop(draggedItem);
                         break;
                     }
                 }else{
-                    if(draggedItem.getItem(0).getId() == R.id.winAns1 || draggedItem.getItem(0).getId() == R.id.winAns2){
-                        ((TextView) v).setVisibility(View.VISIBLE);
-                        v.invalidate();
-                    }
+                    ((TextView) v).setVisibility(View.VISIBLE);
+                    v.invalidate();
                     draggedItem.clear();
                 }
                 break;

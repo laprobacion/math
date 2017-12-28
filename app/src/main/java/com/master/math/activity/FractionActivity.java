@@ -1,17 +1,13 @@
 package com.master.math.activity;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Window;
 
 import com.master.math.R;
+import com.master.math.activity.base.ActionStep;
 
 import fraction.CompareFractionProcessor;
-import fraction.CompareFractionStep;
 
 public class FractionActivity extends AppCompatActivity {
     CompareFractionProcessor processor;
@@ -27,7 +23,7 @@ public class FractionActivity extends AppCompatActivity {
     protected void onPostResume() {
         super.onPostResume();
         if(this.processor != null && this.processor.isReady()){
-            if(this.processor.getStep() == CompareFractionStep.STEP_1 || this.processor.getStep() == CompareFractionStep.STEP_2){
+            if(this.processor.getStep() == ActionStep.STEP_1 || this.processor.getStep() == ActionStep.STEP_2){
                 this.processor.execute();
             }
         }
